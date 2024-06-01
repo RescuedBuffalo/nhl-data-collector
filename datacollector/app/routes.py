@@ -1,30 +1,13 @@
-from flask import Flask, jsonify, redirect, url_for, render_template
-import requests, json, sqlite3, os
-from flask_cors import CORS
-from flask_sqlachemy import SQLAlchemy
+from flask import Blueprint, jsonify
+import requests
 
+main = Blueprint('main', __name__)
 
-
-def create_app():
-    app = Flask(__name__)
-    CORS(app)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nhl_stats.db'
-    db = SQLAlchemy(app)
-    
-    with app.app_context():
-        db.create_all()
-
-    return app
-
-app = create_app()
-
-
-# Basic home route
-@app.route('/')
+@main.route('/')
 def home():
     return "Welcome to the Data Collection Server!"
 
-@app.route('/fetch-nhl-goal-leaders', methods=['GET'])
+@main.route('/fetch-nhl-goal-leaders', methods=['GET'])
 def fetch_goal_leaders():
     url = 'https://api-web.nhle.com/v1/skater-stats-leaders/current'
 
@@ -51,9 +34,8 @@ def fetch_goal_leaders():
     
     else:
         return {}, 500
-    
 
-@app.route('/game-log/<player_id>/game-log/<season>/<game_type>', methods=['GET'])
+@main.route('/game-log/<player_id>/game-log/<season>/<game_type>', methods=['GET'])
 def fetch_nhl_game_logs(player_id, season, game_type):
     url = "https://api-web.nhle.com/v1/player/"
     try:
@@ -90,7 +72,7 @@ def fetch_nhl_game_logs(player_id, season, game_type):
     else:
         return {}, 500
     
-@app.route('/player/{player_id}', methods=['GET'])
+@main.route('/player/<player_id>', methods=['GET'])
 def fetch_players_stats(player_id):
     url = "https://api-web.nhle.com/v1/player/"
     try:
@@ -100,7 +82,7 @@ def fetch_players_stats(player_id):
     
     return response.json(), response.status_code
 
-@app.route('/fetch_game_schedule_{date}', methods=['GET'])
+@main.route('/fetch_game_schedule/<date>', methods=['GET'])
 def fetch_game_schedule(date):
     url = "https://api-web.nhle.com/v1/schedule"
     try:
@@ -109,9 +91,3 @@ def fetch_game_schedule(date):
         return jsonify({'error': str(e)}), 500
     
     return response.json(), response.status_code
-
-
-
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5001))
-    app.run(debug=True, host='0.0.0.0', port=port)
