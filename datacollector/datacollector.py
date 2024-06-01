@@ -1,16 +1,23 @@
 from flask import Flask, jsonify, redirect, url_for, render_template
 import requests, json, sqlite3, os
 from flask_cors import CORS
-
+from flask_sqlachemy import SQLAlchemy
 
 
 
 def create_app():
     app = Flask(__name__)
     CORS(app)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nhl_stats.db'
+    db = SQLAlchemy(app)
+    
+    with app.app_context():
+        db.create_all()
+
     return app
 
 app = create_app()
+
 
 # Basic home route
 @app.route('/')
@@ -102,6 +109,8 @@ def fetch_game_schedule(date):
         return jsonify({'error': str(e)}), 500
     
     return response.json(), response.status_code
+
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5001))
