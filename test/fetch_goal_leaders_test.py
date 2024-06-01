@@ -1,7 +1,7 @@
 # pytest to test the fetch_goal_leaders function in the data_collection_server
 import unittest
 from unittest.mock import patch
-from datacollector import datacollector
+import datacollector
 
 class TestFetchGoalLeaders(unittest.TestCase):
         

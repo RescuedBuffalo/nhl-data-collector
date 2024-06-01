@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from datacollector import datacollector
+import datacollector
 
 class TestFetchPlayerStats(unittest.TestCase):
 
