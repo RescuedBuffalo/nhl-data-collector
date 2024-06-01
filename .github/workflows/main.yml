@@ -27,7 +27,5 @@ jobs:
       - name: Run tests
         run: cd test
             export PYTHONPATH=$(pwd):$PYTHONPATH
-            python -m unittest fetch_game_log.test.py
-            python -m unittest fetch_goal_leaders.test.py
-            python -m unittest fetch_player_stats.test.py
+            python3 -m unittest -k *_test.py
       
