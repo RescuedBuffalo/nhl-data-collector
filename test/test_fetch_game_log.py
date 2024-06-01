@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-import datacollector.datacollector as datacollector
+import datacollector.app as datacollector
 
 class TestFetchGameLog(unittest.TestCase):
     
@@ -9,7 +9,7 @@ class TestFetchGameLog(unittest.TestCase):
         app.config['TESTING'] = True
 
         with app.app_context():
-            response, status_code = datacollector.fetch_nhl_game_logs(8475786, 20222023, 2)
+            response, status_code = datacollector.routes.fetch_nhl_game_logs(8475786, 20222023, 2)
 
         assert status_code == 200
         assert response.json["2022021308"]['gameDate'] == "2023-04-13"

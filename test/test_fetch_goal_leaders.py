@@ -1,7 +1,7 @@
 # pytest to test the fetch_goal_leaders function in the data_collection_server
 import unittest
 from unittest.mock import patch
-import datacollector.datacollector as datacollector
+import datacollector.app as datacollector
 
 class TestFetchGoalLeaders(unittest.TestCase):
         
@@ -33,7 +33,7 @@ class TestFetchGoalLeaders(unittest.TestCase):
             }
             
             with app.app_context():
-                response, status_code = datacollector.fetch_goal_leaders()
+                response, status_code = datacollector.routes.fetch_goal_leaders()
             
             assert status_code == 200
             assert response.json == {

@@ -27,5 +27,5 @@ jobs:
       - name: Run tests
         run: cd test
             export PYTHONPATH=$(pwd):$PYTHONPATH
-            python3 -m unittest -k *_test.py
+            python3 -m unittest -k test
       

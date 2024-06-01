@@ -1,16 +1,15 @@
 # pytest to test the fetch_goal_leaders function in the data_collection_server
 import unittest
-from unittest.mock import patch
-import datacollector.datacollector as datacollector
+import datacollector.app as datacollector
 
-class TestFetchGoalLeaders(unittest.TestCase):
+class TestFetchGameSchedule(unittest.TestCase):
         
-    def fetch_game_schedule(self):
+    def test_fetch_game_schedule(self):
         app = datacollector.create_app()
         app.config['TESTING'] = True
             
         with app.app_context():
-            response, status_code = datacollector.fetch_game_schedule('2022-09-23')
+            response, status_code = datacollector.routes.fetch_game_schedule('2022-09-23')
         
         assert status_code == 200
         assert response.json['nextStartDate']  == '2022-09-30'

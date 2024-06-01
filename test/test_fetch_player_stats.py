@@ -1,6 +1,5 @@
 import unittest
-from unittest.mock import patch
-import datacollector.datacollector as datacollector
+import datacollector.app as datacollector
 
 class TestFetchPlayerStats(unittest.TestCase):
 
@@ -9,7 +8,7 @@ class TestFetchPlayerStats(unittest.TestCase):
         app.config['TESTING'] = True
 
         with app.app_context():
-            response, status_code = datacollector.fetch_players_stats(8475786)
+            response, status_code = datacollector.routes.fetch_players_stats(8475786)
 
         assert status_code == 200
         assert response['firstName']['default'] == 'Zach'
