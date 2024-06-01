@@ -82,6 +82,16 @@ def fetch_nhl_game_logs(player_id, season, game_type):
     
     else:
         return {}, 500
+    
+@app.route('/player/{player_id}', methods=['GET'])
+def fetch_players_stats(player_id):
+    url = "https://api-web.nhle.com/v1/player/"
+    try:
+        response = requests.get(url + f"{player_id}/landing")
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': str(e)}), 500
+    
+    return response.json(), response.status_code
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5001))
