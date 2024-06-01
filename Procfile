@@ -1,1 +1,1 @@
-web: gunicorn data-collector-app:app
+web: python datacollector/run.py
