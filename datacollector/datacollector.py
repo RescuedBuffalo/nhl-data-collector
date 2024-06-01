@@ -93,6 +93,16 @@ def fetch_players_stats(player_id):
     
     return response.json(), response.status_code
 
+@app.route('/fetch_game_schedule_{date}', methods=['GET'])
+def fetch_game_schedule(date):
+    url = "https://api-web.nhle.com/v1/schedule"
+    try:
+        response = requests.get(url + f"fetch_game_schedule/{date}")
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': str(e)}), 500
+    
+    return response.json(), response.status_code
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5001))
     app.run(debug=True, host='0.0.0.0', port=port)

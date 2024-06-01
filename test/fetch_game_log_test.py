@@ -1,11 +1,12 @@
 import unittest
 from unittest.mock import patch
-import datacollector
+import datacollector.datacollector as datacollector
 
 class TestFetchGameLog(unittest.TestCase):
     
     def test_fetch_game_log(self):
         app = datacollector.create_app()
+        app.config['TESTING'] = True
 
         with app.app_context():
             response, status_code = datacollector.fetch_nhl_game_logs(8475786, 20222023, 2)

@@ -6,6 +6,7 @@ class TestFetchPlayerStats(unittest.TestCase):
 
     def test_fetch_player_stats(self):
         app = datacollector.create_app()
+        app.config['TESTING'] = True
 
         with app.app_context():
             response, status_code = datacollector.fetch_players_stats(8475786)

@@ -1,12 +1,13 @@
 # pytest to test the fetch_goal_leaders function in the data_collection_server
 import unittest
 from unittest.mock import patch
-import datacollector
+import datacollector.datacollector as datacollector
 
 class TestFetchGoalLeaders(unittest.TestCase):
         
     def test_fetch_goal_leaders(self):
         app = datacollector.create_app()
+        app.config['TESTING'] = True
 
         with patch('requests.get') as mock_get:
             mock_get.return_value.status_code = 200
