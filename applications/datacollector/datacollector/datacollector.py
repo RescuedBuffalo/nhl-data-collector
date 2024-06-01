@@ -2,8 +2,15 @@ from flask import Flask, jsonify, redirect, url_for, render_template
 import requests, json, sqlite3, os
 from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)
+
+
+
+def create_app():
+    app = Flask(__name__)
+    CORS(app)
+    return app
+
+app = create_app()
 
 # Basic home route
 @app.route('/')

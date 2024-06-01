@@ -1,18 +1,13 @@
 # pytest to test the fetch_goal_leaders function in the data_collection_server
-
-import pytest
-import requests
-from flask_testing import TestCase
+import unittest
 from unittest.mock import patch
-from applications.data_collection_server.main.flask_app import data_collection_app
+from datacollector import datacollector
 
-class TestFetchGoalLeaders(TestCase):
-
-    def create_app(self):
-        data_collection_app.app.config['TESTING'] = True
-        return data_collection_app.app
+class TestFetchGoalLeaders(unittest.TestCase):
         
     def test_fetch_goal_leaders(self):
+        app = datacollector.create_app()
+
         with patch('requests.get') as mock_get:
             mock_get.return_value.status_code = 200
             mock_get.return_value.json.return_value = {
@@ -36,7 +31,8 @@ class TestFetchGoalLeaders(TestCase):
                 ]
             }
             
-            response, status_code = data_collection_app.fetch_goal_leaders()
+            with app.app_context():
+                response, status_code = datacollector.fetch_goal_leaders()
             
             assert status_code == 200
             assert response.json == {
@@ -45,4 +41,4 @@ class TestFetchGoalLeaders(TestCase):
             }     
 
 if __name__ == '__main__':
-    pytest.main()
+    unittest.main()
