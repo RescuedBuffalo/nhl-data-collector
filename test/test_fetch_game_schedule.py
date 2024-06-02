@@ -9,10 +9,10 @@ class TestFetchGameSchedule(unittest.TestCase):
         app.config['TESTING'] = True
             
         with app.app_context():
-            response, status_code = datacollector.routes.fetch_game_schedule('2022-09-23')
+            response, status_code = datacollector.routes.get_game_schedule('2023-11-26')
         
         assert status_code == 200
-        assert response.json['nextStartDate']  == '2022-09-30'
+        assert response.json['nextStartDate']  == '2023-11-26'
         assert response.json['gameWeek'][0]['numberOfGames'] == 0
         assert response.json['gameWeek'][1]['numberOfGames'] == 4
 
