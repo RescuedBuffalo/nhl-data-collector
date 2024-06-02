@@ -15,7 +15,7 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    from .routes import main
+    from datacollector.app.routes import main
     app.register_blueprint(main)
 
     return app

@@ -1,9 +1,8 @@
-from . import db
+from datacollector.app import db
 
 class Team(db.Model):
     __tablename__ = 'teams'
-    id = db.Column(db.Integer, primary_key=True)
-    city = db.Column(db.String(100), nullable=False)
+    id = db.Column(db.String(3), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
 
     records = db.relationship('Record', backref='team', lazy=True)
@@ -32,7 +31,7 @@ class Game(db.Model):
 
 class Record(db.Model):
     __tablename__ = 'records'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(11), primary_key=True)
     team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
     wins = db.Column(db.Integer, nullable=False)
     losses = db.Column(db.Integer, nullable=False)
@@ -53,5 +52,6 @@ class Season(db.Model):
     sh_goals = db.Column(db.Integer, nullable=False)
     sh_points = db.Column(db.Integer, nullable=False)
     gw_goals = db.Column(db.Integer, nullable=False)
-    blocks = db.Column(db.Integer, nullable=False)
-    hits = db.Column(db.Integer, nullable=False)
+    shots = db.Column(db.Integer, nullable=False)
+    games_played = db.Column(db.Integer, nullable=False)
+    pim = db.Column(db.Integer, nullable=False)

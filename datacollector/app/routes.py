@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-import requests
+from datacollector.models import Team, Player, Game, Record, Season
 
 main = Blueprint('main', __name__)
 
@@ -8,86 +8,21 @@ def home():
     return "Welcome to the Data Collection Server!"
 
 @main.route('/fetch-nhl-goal-leaders', methods=['GET'])
-def fetch_goal_leaders():
-    url = 'https://api-web.nhle.com/v1/skater-stats-leaders/current'
-
-    try:
-        response = requests.get(url, params={'categories': 'goals', 'limit': 10})
-    except requests.exceptions.RequestException as e:
-        return jsonify({'error': str(e)}), 500
-    
-    if response.status_code == 200:
-        data = response.json()
-        
-        # Create a json object to be returned to the client
-        player_data = {}
-
-        for player in data['goals']:
-            player_id = player['id']
-            player_name = f"{player['firstName']['default']} {player['lastName']['default']}"
-            position = player['position']
-            team = player['teamName']['default']
-            goals = player['value']
-            player_data[str(player_id)] = {'player_name': player_name, 'position': position, 'team': team, 'goals': goals}
-
-        return jsonify(player_data), 200
-    
-    else:
-        return {}, 500
+def get_goal_leaders():
+    goal_leaders = NHLGoalLeaders.query.all()
+    return jsonify([leader.to_dict() for leader in goal_leaders]), 200
 
 @main.route('/game-log/<player_id>/game-log/<season>/<game_type>', methods=['GET'])
-def fetch_nhl_game_logs(player_id, season, game_type):
-    url = "https://api-web.nhle.com/v1/player/"
-    try:
-        response = requests.get(url + f"{player_id}/game-log/{season}/{game_type}")
-    except requests.exceptions.RequestException as e:
-        return jsonify({'error': str(e)}), 500
-    
-    if response.status_code == 200:
-        game_data = {}
-        for game in response.json()['gameLog']:
-            data = {}
-            game_id = str(game['gameId'])
-            data['goals'] = game['goals']
-            data['assists'] = game['assists']
-            data['points'] = game['points']
-            data['teamName'] = game['commonName']
-            data['teamAbbreviation'] = game['teamAbbrev']
-            data['opponentName'] = game['opponentCommonName']   
-            data['gameDate'] = game['gameDate']        
-            data['plusMinus'] = game['plusMinus']
-            data['penaltyMinutes'] = game['pim']
-            data['shots'] = game['shots']
-            data['powerplayGoals'] = game['powerPlayGoals']
-            data['powerplayPoints'] = game['powerPlayPoints']
-            data['shorthandedGoals'] = game['shorthandedGoals']
-            data['shorthandedPoints'] = game['shorthandedPoints']
-            data['timeOnIce'] = game['toi']
-            data['shifts'] = game['shifts']
-            data['otGoals'] = game['otGoals']
-            game_data[game_id] = data
+def get_nhl_game_logs(player_id, season, game_type):
+    game_logs = NHLGameLog.query.filter_by(player_id=player_id).all()
+    return jsonify([log.to_dict() for log in game_logs]), 200
 
-        return jsonify(game_data), 200
-    
-    else:
-        return {}, 500
-    
 @main.route('/player/<player_id>', methods=['GET'])
-def fetch_players_stats(player_id):
-    url = "https://api-web.nhle.com/v1/player/"
-    try:
-        response = requests.get(url + f"{player_id}/landing")
-    except requests.exceptions.RequestException as e:
-        return jsonify({'error': str(e)}), 500
-    
-    return response.json(), response.status_code
+def get_player_stats(player_id):
+    player_stats = NHLPlayerStats.query.filter_by(player_id=player_id).first()
+    return jsonify(player_stats.to_dict()), 200
 
 @main.route('/fetch_game_schedule/<date>', methods=['GET'])
-def fetch_game_schedule(date):
-    url = "https://api-web.nhle.com/v1/schedule"
-    try:
-        response = requests.get(url + f"fetch_game_schedule/{date}")
-    except requests.exceptions.RequestException as e:
-        return jsonify({'error': str(e)}), 500
-    
-    return response.json(), response.status_code
+def get_game_schedule(date):
+    game_schedule = NHLGameSchedule.query.filter_by(date=date).first()
+    return jsonify(game_schedule.to_dict()), 200
