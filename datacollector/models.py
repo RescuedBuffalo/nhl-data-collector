@@ -23,6 +23,8 @@ class Game(db.Model):
     __tablename__ = 'games'
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
+    season = db.Column(db.String(8), nullable=False)
+    game_type = db.Column(db.Integer, nullable=False)
     home_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
     away_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
     home_goals = db.Column(db.Integer, nullable=False)
