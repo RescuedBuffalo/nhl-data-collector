@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from datacollector.models import Team, Player, Game, Record, Season, db
+from models import Team, Player, Game, Record, Season, db
 
 main = Blueprint('main', __name__)
 

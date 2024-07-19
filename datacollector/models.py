@@ -1,4 +1,4 @@
-from datacollector.app import db
+from app import db
 
 class Team(db.Model):
     __tablename__ = 'teams'
@@ -57,3 +57,9 @@ class Season(db.Model):
     shots = db.Column(db.Integer, nullable=False)
     games_played = db.Column(db.Integer, nullable=False)
     pim = db.Column(db.Integer, nullable=False)
+    gaa = db.Column(db.Float, nullable=False)
+    save_pct = db.Column(db.Float, nullable=False)
+    wins = db.Column(db.Integer, nullable=False)
+    shutouts = db.Column(db.Integer, nullable=False)
+    losses = db.Column(db.Integer, nullable=False)
+    ot_losses = db.Column(db.Integer, nullable=False)

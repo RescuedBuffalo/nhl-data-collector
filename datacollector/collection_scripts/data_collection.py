@@ -14,25 +14,37 @@ def fetch_player_season(player_id, conn):
         print(f"Error fetching player stats: {e}")
         return
     
+    featured_stats = response_json.get('featuredStats', {})
+    regular_season = featured_stats.get('regularSeason', {})
+    sub_season = regular_season.get('subSeason')
+
+if sub_season is None:
+    return
     player_stats = response.json()['featuredStats']['regularSeason']['subSeason']
     cursor = conn.cursor()
     cursor.execute('''
-        INSERT OR REPLACE INTO seasons (id, player_id, goals, assists, points, pp_goals, pp_points, sh_goals, sh_points, gw_goals, shots, games_played, pim)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT OR REPLACE INTO seasons (id, player_id, goals, assists, points, pp_goals, pp_points, sh_goals, sh_points, gw_goals, shots, games_played, pim, gaa, save_pct, wins, shutouts, losses, ot_losses)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', (
-        int(str(player_stats['season']) + str(player_id)),
+        int(str(response.json()['featuredStats']['season']) + str(player_id)),
         player_id,
-        player_stats['goals'],
-        player_stats['assists'],
-        player_stats['points'],
-        player_stats['powerPlayGoals'],
-        player_stats['powerPlayPoints'],
-        player_stats['shorthandedGoals'],
-        player_stats['shorthandedPoints'],
-        player_stats['gameWinningGoals'],
-        player_stats['shots'],
-        player_stats['gamesPlayed'],
-        player_stats['pim']
+        player_stats.get('goals', 0),
+        player_stats.get('assists', 0),
+        player_stats.get('points', 0),
+        player_stats.get('powerPlayGoals', 0),
+        player_stats.get('powerPlayPoints', 0),
+        player_stats.get('shorthandedGoals', 0),
+        player_stats.get('shorthandedPoints', 0),
+        player_stats.get('gameWinningGoals', 0),
+        player_stats.get('shots', 0),
+        player_stats.get('gamesPlayed', 0),
+        player_stats.get('pim', 0),
+        player_stats.get('goalsAgainstAvg', 0),
+        player_stats.get('savePctg', 0),
+        player_stats.get('wins', 0),
+        player_stats.get('shutouts', 0),
+        player_stats.get('losses', 0),
+        player_stats.get('otLosses', 0),
     ))
     conn.commit()
 
@@ -119,28 +131,37 @@ def fetch_roster_by_season(team_id, season, conn):
     conn.commit()
 
 def backfill_games(start_date, conn):
-    dates = pd.date_range(start=start_date, end=datetime.datetime.now().strftime('%Y-%m-%d'), freq='W-SUN').strftime('%Y-%m-%d')
+    dates = pd.date_range(start=start_date, end=datetime.datetime.now().strftime('%Y-%m-%d'), freq='D').strftime('%Y-%m-%d')
+    i = 0
     for date in dates:
         fetch_game_schedule(date, conn)
-        time.sleep(60)
+        i += 1
+        if i % 5 == 0:
+            time.sleep(60)
 
 def backfill_seasons(conn):
     cursor = conn.cursor()
     # Select all player IDs from the players table
     cursor.execute('SELECT id FROM players')
     player_ids = cursor.fetchall()
+    i = 0
     for player_id in player_ids:
+        i += 1
         fetch_player_season(player_id[0], conn)
-        time.sleep(60)
+        if i % 5 == 0:
+            time.sleep(60)
 
 def backfill_rosters(conn):
     cursor = conn.cursor()
     # Select all team IDs from the teams table
     cursor.execute('SELECT id FROM teams')
     team_ids = cursor.fetchall()
+    i = 0
     for team_id in team_ids:
         fetch_roster_by_season(team_id[0], 20232024, conn)
-        time.sleep(60)
+        i += 1
+        if i % 5 == 0:
+            time.sleep(60)
 
 def backfill_teams(conn):
     fetch_teams_and_records(conn)
@@ -173,7 +194,7 @@ if __name__ == '__main__':
     if args.player_id:
         fetch_player_season(args.player_id, conn)
     if args.backfill_games:
-        backfill_games(args.backfill, conn)
+        backfill_games(args.backfill_games, conn)
     if args.backfill_seasons:
         backfill_seasons(conn)
     if args.backfill_rosters:

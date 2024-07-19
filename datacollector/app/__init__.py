@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from datacollector.config import Config
+from config import Config
 
 db = SQLAlchemy()
 
@@ -12,10 +12,12 @@ def create_app():
 
     db.init_app(app)
 
+    from models import Team, Player, Game, Record, Season
+
     with app.app_context():
         db.create_all()
 
-    from datacollector.app.routes import main
+    from app.routes import main
     app.register_blueprint(main)
 
     return app
